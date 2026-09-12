@@ -413,8 +413,10 @@ UrlShortner/
 ├── instance/
 │
 ├── DockerFile
+├── dockercompose.yml
+├── gunicorn.conf.py
 ├── requirements.txt
-├── run.py
+├── .gitignore
 ├── test.py
 └── Readme.md
 ```
@@ -427,13 +429,17 @@ Contains the Flask application, API routes, Redis configuration, database config
 
 Contains the SQLAlchemy database instance and `URL` model.
 
-### `run.py`
+### `test.py`
 
-Application entry point used to start the Flask server.
+For testing the server under concurrent requests to see the capcity of the backend api.
 
-### `DockerFile`
+### `dockerfile`
 
 Defines the container image and application startup command.
+
+### `dockercompose.yml`
+
+spins up multiple images like redis, application, mysql for production purposes.
 
 ## Design Considerations
 
