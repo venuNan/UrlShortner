@@ -18,7 +18,7 @@ def shorten():
     passkey = data.get("passkey")
     if url and passkey:
         shortened_url = hashlib.shake_128(url.encode()).hexdigest(5)
-        entry = URL(url_id=shortened_url, url=url, passkey=passkey)
+        entry = URL(url_id=shortened_url, url=url, passkey=hashlib.shake_128(passkey.encode()).hexdigest(5))
         try:
             db.session.add(entry)
             db.session.commit()
@@ -41,15 +41,19 @@ def redirect(short_url:str):
             url = db.session.execute(smt).first()
             if url:
                 redis.set(short_url, url[0].url, ex=1800)
-                return jsonify({"Message":"Successfull", "URL":url[0].url}), 200
+                smt = db.update(URL).where(URL.url_id == short_url).values(count = URL.count+1)
+                db.session.execute(smt)
+                db.session.commit()
+                return redirect(url[0].url, code=302)
             else:
                 return jsonify({"Error": "URL doesnt exist"}), 404
         else:
             smt = db.update(URL).where(URL.url_id == short_url).values(count = URL.count+1)
             db.session.execute(smt)
             db.session.commit()
-            return jsonify({"Message":"Successfull", "URL":main_url.decode()}), 200
+            return redirect(main_url, code=302)
     except Exception:
+        db.session.rollback()
         return jsonify({"Error": "Internal Server Error"}), 500
 
 @app.route("/delete", methods=["DELETE"])
@@ -59,7 +63,7 @@ def delete():
     passkey: str = data.get("passkey")
     if short_url and passkey:
         try:
-            smt = db.delete(URL).where(URL.passkey == passkey, URL.url_id == short_url)
+            smt = db.delete(URL).where(URL.passkey == hashlib.shake_128(passkey.encode()).hexdigest(5), URL.url_id == short_url)
             result = db.session.execute(smt)
             db.session.commit()
             if result.rowcount > 0:
