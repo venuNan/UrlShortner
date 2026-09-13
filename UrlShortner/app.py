@@ -1,6 +1,6 @@
 import os
 import hashlib
-from flask import Flask, redirect, request,jsonify
+from flask import Flask, redirect as flask_redirect, request,jsonify
 from redis import StrictRedis
 from sqlalchemy.exc import IntegrityError
 from .model import db, URL
@@ -44,14 +44,14 @@ def redirect(short_url:str):
                 smt = db.update(URL).where(URL.url_id == short_url).values(count = URL.count+1)
                 db.session.execute(smt)
                 db.session.commit()
-                return redirect(url[0].url, code=302)
+                return jsonify({"msg":"Successful", "URl":url[0].url}), 200
             else:
                 return jsonify({"Error": "URL doesnt exist"}), 404
         else:
             smt = db.update(URL).where(URL.url_id == short_url).values(count = URL.count+1)
             db.session.execute(smt)
             db.session.commit()
-            return redirect(main_url, code=302)
+            return jsonify({"msg":"Successful", "URl":main_url}), 200
     except Exception:
         db.session.rollback()
         return jsonify({"Error": "Internal Server Error"}), 500
