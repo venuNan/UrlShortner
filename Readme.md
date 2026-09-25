@@ -154,7 +154,7 @@ The model is defined using Flask-SQLAlchemy.
 ```text
 UrlShortner/
 │
-├── UrlShortner/
+├── app/
 │   ├── __init__.py
 │   ├── app.py
 │   └── model.py

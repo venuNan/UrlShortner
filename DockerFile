@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD [ "gunicorn", "UrlShortner.app:app" ]
+CMD [ "gunicorn", "app.app:app" ]
