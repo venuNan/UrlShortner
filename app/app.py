@@ -1,11 +1,9 @@
-import os
 import hashlib
 from flask import Flask, redirect as flask_redirect, request,jsonify
 from redis import StrictRedis
 from sqlalchemy.exc import IntegrityError
 from .model import db, URL
 
-basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
 redis = StrictRedis(host="localhost", port=6379, db=0)
